@@ -5,86 +5,98 @@
 <title>ระบบเปิดบิลทอง — โรงหล่อสุนทร เจริญนคร</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
+/* ── DARK THEME ── */
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,sans-serif;background:#f0f0f0;font-size:14px;color:#111}
+body{font-family:Arial,sans-serif;background:#121212;font-size:14px;color:#e0e0e0}
 .app{max-width:860px;margin:0 auto;padding:1rem}
-.topbar{background:#1a1a2e;border-radius:10px;padding:12px 16px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.topbar{background:#1a1a2e;border-radius:10px;padding:12px 16px;margin-bottom:10px;display:flex;align-items:center;gap:10px;border:1px solid #333}
 .ticon{width:36px;height:36px;border-radius:50%;background:#FAC775;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
 .ttitle{font-size:15px;font-weight:bold;color:#F0C040}
 .tsub{font-size:11px;color:#aaa;margin-top:1px}
 .billno{margin-left:auto;text-align:right;font-size:11px;color:#aaa;font-family:monospace}
-.card{background:#fff;border:1px solid #e0e0e0;border-radius:10px;padding:12px 14px;margin-bottom:8px}
-.sl{font-size:10px;font-weight:bold;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+
+.card{background:#1e1e1e;border:1px solid #333;border-radius:10px;padding:12px 14px;margin-bottom:8px}
+.sl{font-size:10px;font-weight:bold;color:#aaa;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
 .fg{display:grid;gap:8px;margin-bottom:8px}
 .f2{grid-template-columns:1fr 1fr}.f3{grid-template-columns:1fr 1fr 1fr}
 .fi{display:flex;flex-direction:column;gap:3px}
-.fi label{font-size:11px;color:#888}
-.fi input,.fi select{height:33px;padding:0 8px;border:1px solid #ddd;border-radius:7px;font-size:13px;width:100%;background:#fff;color:#111}
-.fi input:focus,.fi select:focus{outline:none;border-color:#BA7517}
-.fi input.locked{background:#f5f5f5;color:#555;cursor:default}
+.fi label{font-size:11px;color:#999}
+.fi input,.fi select, textarea{height:33px;padding:0 8px;border:1px solid #444;border-radius:7px;font-size:13px;width:100%;background:#2c2c2c;color:#fff}
+.fi input:focus,.fi select:focus, textarea:focus{outline:none;border-color:#BA7517}
+.fi input.locked{background:#222;color:#777;cursor:default;border-color:#333}
+
 .cust-wrap{position:relative}
 .cust-wrap input{width:100%}
-.cust-dropdown{display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #ddd;border-radius:0 0 7px 7px;max-height:180px;overflow-y:auto;z-index:50;box-shadow:0 4px 10px rgba(0,0,0,.1)}
+.cust-dropdown{display:none;position:absolute;top:100%;left:0;right:0;background:#2c2c2c;border:1px solid #444;border-radius:0 0 7px 7px;max-height:180px;overflow-y:auto;z-index:50;box-shadow:0 4px 10px rgba(0,0,0,.5)}
 .cust-dropdown.show{display:block}
-.cust-item{padding:8px 10px;font-size:13px;cursor:pointer;border-bottom:1px solid #f5f5f5}
-.cust-item:hover{background:#FAEEDA}
-.cust-item.new{color:#BA7517;font-style:italic}
+.cust-item{padding:8px 10px;font-size:13px;cursor:pointer;border-bottom:1px solid #333}
+.cust-item:hover{background:#3a3a3a}
+.cust-item.new{color:#FAC775;font-style:italic}
+
 .pills{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
-.pill{background:#FAEEDA;border:1px solid #FAC775;border-radius:5px;padding:2px 8px;font-size:11px;color:#633806}
-.pill b{color:#412402}
+.pill{background:#332810;border:1px solid #FAC775;border-radius:5px;padding:2px 8px;font-size:11px;color:#FAC775}
+.pill b{color:#fff}
+
 table{width:100%;border-collapse:collapse}
-thead th{font-size:10px;color:#999;font-weight:normal;padding:4px 5px;border-bottom:1px solid #eee;text-align:left;white-space:nowrap}
+thead th{font-size:10px;color:#aaa;font-weight:normal;padding:4px 5px;border-bottom:1px solid #444;text-align:left;white-space:nowrap}
 thead th:not(:first-child){text-align:right}
-tbody td{padding:3px 3px;border-bottom:1px solid #f5f5f5;vertical-align:middle}
-tbody td input,tbody td select{height:29px;padding:0 5px;border:1px solid #ddd;border-radius:5px;font-size:12px;width:100%;background:#fff;color:#111}
+tbody td{padding:3px 3px;border-bottom:1px solid #333;vertical-align:middle}
+tbody td input,tbody td select{height:29px;padding:0 5px;border:1px solid #444;border-radius:5px;font-size:12px;width:100%;background:#2c2c2c;color:#fff}
 tbody td input:focus{outline:none;border-color:#BA7517}
-.rc{background:#f7f7f7!important;border:0!important;color:#777;text-align:right;font-size:12px;cursor:default}
-.badd{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#666;background:none;border:1px solid #ddd;border-radius:6px;padding:4px 9px;cursor:pointer;margin-top:5px}
-.badd:hover{background:#f5f5f5}
-.del{width:24px;height:24px;border-radius:50%;background:none;border:1px solid #ddd;color:#bbb;cursor:pointer;font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center}
-.del:hover{background:#fee;border-color:#fbb;color:#c33}
+.rc{background:#222!important;border:1px solid #333!important;color:#aaa;text-align:right;font-size:12px;cursor:default}
+
+.badd{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#ccc;background:none;border:1px solid #555;border-radius:6px;padding:4px 9px;cursor:pointer;margin-top:5px}
+.badd:hover{background:#333}
+.del{width:24px;height:24px;border-radius:50%;background:none;border:1px solid #555;color:#888;cursor:pointer;font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center}
+.del:hover{background:#522;border-color:#a44;color:#f66}
+
 .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px}
-.kpi{background:#f7f7f7;border-radius:8px;padding:8px;text-align:center}
-.kl{font-size:10px;color:#999;margin-bottom:2px}.kv{font-size:19px;font-weight:bold;color:#222}.ku{font-size:10px;color:#bbb}
-.totbar{background:#FAEEDA;border:1px solid #FAC775;border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.totlbl{font-size:13px;font-weight:bold;color:#633806}.totval{font-size:24px;font-weight:bold;color:#412402}
+.kpi{background:#2a2a2a;border:radius:8px;padding:8px;text-align:center;border-radius:8px;}
+.kl{font-size:10px;color:#aaa;margin-bottom:2px}.kv{font-size:19px;font-weight:bold;color:#fff}.ku{font-size:10px;color:#888}
+
+.totbar{background:#332810;border:1px solid #FAC775;border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.totlbl{font-size:13px;font-weight:bold;color:#FAC775}.totval{font-size:24px;font-weight:bold;color:#fff}
+
 .acts{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:5px}
 .btn{flex:1;min-width:100px;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer;border:1px solid;display:flex;align-items:center;justify-content:center;gap:4px}
 .bg{background:#BA7517;border-color:#854F0B;color:#fff}.bg:hover{background:#9a6010}
-.bo{background:#fff;border-color:#ddd;color:#333}.bo:hover{background:#f5f5f5}
+.bo{background:#2c2c2c;border-color:#555;color:#e0e0e0}.bo:hover{background:#3a3a3a}
+
 .stbar{font-size:12px;text-align:center;min-height:16px;color:#888}
-.ok{color:#2d6a1f}.er{color:#a00}
-/* PRINT */
+.ok{color:#4caf50}.er{color:#f44336}
+
+/* ── PRINT (สว่างเหมือนเดิม) ── */
 #billPrintArea{display:none}
 @media print{
+  body{background:#fff!important;color:#000!important}
   body>*{display:none!important}
-  #billPrintArea{display:block!important}
+  #billPrintArea{display:block!important;background:#fff;color:#000}
   @page{size:80mm auto;margin:0}
 }
-#billPrintArea{font-family:Arial,sans-serif;font-size:12px;color:#000;width:72mm;margin:0 auto;padding:3mm 2mm}
+#billPrintArea{font-family:Arial,sans-serif;font-size:12px;width:72mm;margin:0 auto;padding:3mm 2mm}
 .bh{text-align:center;border-bottom:2.5px solid #000;padding-bottom:5px;margin-bottom:5px}
 .bh .sn{font-size:15px;font-weight:bold;letter-spacing:1px}
 .bh .sc{font-size:9px;color:#333;margin-top:3px;line-height:1.7}
 .bm{font-size:10px;border-bottom:1px dashed #999;padding-bottom:5px;margin-bottom:4px}
 .bm table{width:100%;border-collapse:collapse}
-.bm td{padding:1px 0;font-size:10px;border:none}
+.bm td{padding:1px 0;font-size:10px;border:none;color:#000}
 .bm td.r{text-align:right}
-.st{font-size:9px;font-weight:bold;text-transform:uppercase;letter-spacing:.05em;background:#eee;padding:2px 4px;border-top:1.5px solid #000;border-bottom:1px solid #bbb;margin:5px 0 0}
+.st{font-size:9px;font-weight:bold;text-transform:uppercase;letter-spacing:.05em;background:#eee;padding:2px 4px;border-top:1.5px solid #000;border-bottom:1px solid #bbb;margin:5px 0 0;color:#000}
 .git{width:100%;border-collapse:collapse;table-layout:fixed}
 .git th{font-size:8px;color:#000;font-weight:bold;padding:3px 2px;border:1px solid #bbb;text-align:center;background:#f2f2f2}
-.git td{font-size:10px;padding:4px 2px;border:1px solid #ddd;text-align:center}
+.git td{font-size:10px;padding:4px 2px;border:1px solid #ddd;text-align:center;color:#000}
 .git td:first-child{font-weight:bold}
 .git td.ppg,.git td.amt{text-align:right}
 .git td.amt{font-weight:bold}
 .glt{width:100%;border-collapse:collapse}
-.glt th{font-size:8px;font-weight:bold;padding:3px;border:1px solid #bbb;text-align:center;background:#f2f2f2}
-.glt td{font-size:10px;padding:4px 3px;border:1px solid #ddd;text-align:center}
+.glt th{font-size:8px;font-weight:bold;padding:3px;border:1px solid #bbb;text-align:center;background:#f2f2f2;color:#000}
+.glt td{font-size:10px;padding:4px 3px;border:1px solid #ddd;text-align:center;color:#000}
 .glt td:last-child{text-align:right;font-weight:bold}
 .tots{padding:5px 2px;border-top:1px dashed #999;margin-top:5px}
-.tl{display:flex;justify-content:space-between;font-size:10px;padding:1px 0;color:#555}
+.tl{display:flex;justify-content:space-between;font-size:10px;padding:1px 0;color:#333}
 .tl.g{font-size:15px;font-weight:bold;padding-top:5px;border-top:2.5px solid #000;margin-top:4px;color:#000}
 .bf{text-align:center;border-top:2px solid #000;padding-top:5px;margin-top:5px}
-.bf .thx{font-size:11px;font-weight:bold}
+.bf .thx{font-size:11px;font-weight:bold;color:#000}
 .bf .nt{font-size:9px;color:#666;margin-top:2px}
 @media(max-width:560px){.f2,.f3{grid-template-columns:1fr 1fr}.kpis{grid-template-columns:1fr 1fr}}
 </style>
@@ -96,12 +108,11 @@ tbody td input:focus{outline:none;border-color:#BA7517}
   <div class="ticon">&#x1F947;</div>
   <div>
     <div class="ttitle">โรงหล่อสุนทร เจริญนคร</div>
-    <div class="tsub">ระบบเปิดบิลทอง — สูตรจริงของโรงหล่อ</div>
+    <div class="tsub">ระบบเปิดบิลทอง — สูตรจริงของโรงหล่อ (Dark Mode)</div>
   </div>
   <div class="billno"><div id="billno"></div><div id="todayTxt" style="font-size:10px"></div></div>
 </div>
  
-<!-- ข้อมูลลูกค้า -->
 <div class="card">
   <div class="sl">ข้อมูลลูกค้า</div>
   <div class="fg f3">
@@ -132,7 +143,6 @@ tbody td input:focus{outline:none;border-color:#BA7517}
   <div class="pills" id="pills"></div>
 </div>
  
-<!-- รายการทอง -->
 <div class="card">
   <div class="sl">รายการทอง</div>
   <div style="overflow-x:auto"><table>
@@ -150,7 +160,6 @@ tbody td input:focus{outline:none;border-color:#BA7517}
   <button class="badd" onclick="addG()">+ เพิ่มรายการทอง</button>
 </div>
  
-<!-- ค่าแรง -->
 <div class="card">
   <div class="sl">ค่าแรง / อื่นๆ</div>
   <div style="overflow-x:auto"><table>
@@ -179,7 +188,7 @@ tbody td input:focus{outline:none;border-color:#BA7517}
  
 <div class="card">
   <div class="sl">หมายเหตุ</div>
-  <textarea id="note" rows="2" style="width:100%;border:1px solid #ddd;border-radius:7px;padding:7px;font-size:13px;resize:vertical;font-family:Arial" placeholder="เช่น resin ยี่ห้อ, สีพิเศษ..."></textarea>
+  <textarea id="note" rows="2" style="width:100%;border:1px solid #444;border-radius:7px;padding:7px;font-size:13px;resize:vertical;font-family:Arial;background:#2c2c2c;color:#fff" placeholder="เช่น resin ยี่ห้อ, สีพิเศษ..."></textarea>
 </div>
  
 <div class="acts">
@@ -197,17 +206,7 @@ const SHOP_NAME='โรงหล่อสุนทร เจริญนคร';
 const SHOP_TEL='08x-xxx-xxxx';
 const SHOP_LINE='@sunthorncast';
  
-// ── ค่าส่วนต่างสีชมพู (คงที่ บวกเพิ่มจากสีขาว) ──
-const PINK_ADD={
-  '18k ขาว':0, '18k ชมพู':8,
-  '10k ขาว':0, '10k ชมพู':2,
-  '9k ขาว':0,  '9k ชมพู':2,
-};
- 
 // ── rateMap ──
-// si = เปอร์เซ็นต์บวกน้ำหนัก (0=ไม่บวก, 1.5, 2)
-// isPalla = คำนวณจากราคาพาราเดียม
-// pinkAdd = บวกเพิ่มจากสีขาว (บาท/กรัม คงที่)
 const RM={
   "96.5%":     {pct:96.5, add:0,  si:0},
   "90% เต็ม": {pct:95,   add:10, si:1.5},
@@ -230,7 +229,6 @@ const RM={
   "9P":        {pct:40.7, add:15, si:2},
   "9V":        {pct:40.7, add:15, si:2},
   "ชค":        {pct:35,   add:15, si:2},
-  // ── พาราเดียม ──
   "18k ขาว":   {pct:80,   add:10, si:1.5, isPalla:true, pinkAdd:0},
   "18k ชมพู":  {pct:80,   add:10, si:1.5, isPalla:true, pinkAdd:8},
   "10k ขาว":   {pct:44.7, add:10, si:2,   isPalla:true, pinkAdd:0},
@@ -242,7 +240,6 @@ const RM={
  
 let gRows=[],lRows=[],seq=1;
  
-// ── Customer Memory ──
 function loadCustomers(){return JSON.parse(localStorage.getItem('goldCustomers')||'[]');}
 function saveCustomer(name){
   if(!name.trim())return;
@@ -275,7 +272,6 @@ function selectCust(name){
 }
 function hideCustDD(){document.getElementById('custDD').classList.remove('show');}
  
-// ── Helpers ──
 function todayISO(){return new Date().toISOString().split('T')[0];}
 function thaiDate(iso){
   if(!iso)return'-';
@@ -318,7 +314,9 @@ function onGC(){
 }
  
 function addG(){
-  const id='g'+Date.now();gRows.push(id);
+  // ใช้ Random ป้องกัน ID ซ้ำเวลากดรัวๆ
+  const id='g'+Date.now()+Math.floor(Math.random()*1000);
+  gRows.push(id);
   const tb=document.getElementById('goldBody');
   const tr=document.createElement('tr');tr.id=id;
   const opts=Object.keys(RM).map(k=>`<option value="${k}">${k}</option>`).join('');
@@ -350,19 +348,20 @@ function recalcG(id){
 }
  
 function addL(){
-  const id='l'+Date.now();lRows.push(id);
+  const id='l'+Date.now()+Math.floor(Math.random()*1000);
+  lRows.push(id);
   const tb=document.getElementById('laborBody');
   const tr=document.createElement('tr');tr.id=id;
   tr.innerHTML=`
     <td>
-      <select id="lsel_${id}" onchange="toggleLaborName('${id}',this)" style="height:29px;padding:0 5px;border:1px solid #ddd;border-radius:5px;font-size:12px;width:100%">
+      <select id="lsel_${id}" onchange="toggleLaborName('${id}',this)" style="height:29px;padding:0 5px;border:1px solid #444;border-radius:5px;font-size:12px;width:100%;background:#2c2c2c;color:#fff">
         <option value="ค่าแรง">ค่าแรง</option>
         <option value="อื่นๆ">อื่นๆ (กรอกเอง)</option>
       </select>
-      <input type="text" id="lname_${id}" placeholder="ระบุรายการ..." style="display:none;margin-top:3px;height:29px;padding:0 5px;border:1px solid #ddd;border-radius:5px;font-size:12px;width:100%">
+      <input type="text" id="lname_${id}" placeholder="ระบุรายการ..." style="display:none;margin-top:3px;height:29px;padding:0 5px;border:1px solid #444;border-radius:5px;font-size:12px;width:100%;background:#2c2c2c;color:#fff">
     </td>
     <td><input type="number" min="0" step="1" value="1" oninput="recalcL('${id}')"></td>
-    <td><input type="number" min="0" step="1" placeholder="0" oninput="recalcL('${id}')" style="background:#fff;border:1px solid #ddd;color:#111"></td>
+    <td><input type="number" min="0" step="1" placeholder="0" oninput="recalcL('${id}')"></td>
     <td><input class="rc" readonly></td>
     <td><button class="del" onclick="delRow('${id}','l')">&#xD7;</button></td>`;
   tb.appendChild(tr);
@@ -375,7 +374,6 @@ function toggleLaborName(id,sel){
  
 function recalcL(id){
   const tr=document.getElementById(id);if(!tr)return;
-  // ดึง input จาก td แต่ละช่องแยกกัน เพราะ td แรกมี hidden input ด้วย
   const tds=tr.querySelectorAll('td');
   const qInp=tds[1]?tds[1].querySelector('input'):null;
   const pInp=tds[2]?tds[2].querySelector('input'):null;
@@ -433,7 +431,16 @@ function buildData(){
     const si=siManual!==null?siManual:info.si;
     const netWt=wt+(wt*si/100);
     const ppg=calcPPG(sel.value);
-    items.push({type:sel.value,wt,si,netWt,ppg,total:netWt*ppg});
+    
+    // ตรงคีย์เวิร์ดนี้แก้กลับไปเหมือนโค้ดเก่าเพื่อให้ Sheet มองเห็นข้อมูล
+    items.push({
+      type:sel.value,
+      wt:wt,
+      si:si,
+      netWeight:netWt,
+      pricePerGram:ppg,
+      total:netWt*ppg
+    });
   });
   const wages=[];
   lRows.forEach(id=>{
@@ -466,25 +473,39 @@ function setSt(msg,type=''){
 async function saveAndPrint(){
   const d=buildData();
  
-  // บันทึกชื่อลูกค้า
   if(d.customer&&d.customer!=='(ไม่ระบุ)')saveCustomer(d.customer);
  
   setSt('กำลังบันทึก Google Sheets...');
+  
   try{
-    await fetch('https://sheet-r6izw2eudq-uc.a.run.app',{
-      redirect:'follow',method:'POST',
-      body:JSON.stringify({date:d.date,customer:d.customer,items:d.items,totalWage:d.laborTotal,grandTotal:d.grandTotal}),
+    const res = await fetch('https://sheet-r6izw2eudq-uc.a.run.app',{
+      redirect:'follow',
+      method:'POST',
+      body:JSON.stringify({
+        date:d.date,
+        customer:d.customer,
+        items:d.items,
+        totalWage:d.laborTotal,
+        grandTotal:d.grandTotal
+      }),
       headers:{'Content-Type':'application/json'}
     });
+    
+    if (!res.ok) throw new Error(`Server Error: ${res.status}`);
+    
     setSt('บันทึก Google Sheets เรียบร้อย','ok');
-  }catch(e){setSt('บันทึกไม่สำเร็จ — พิมพ์บิลต่อได้','er');}
+  }catch(e){
+    console.error(e);
+    setSt('บันทึกไม่สำเร็จ — พิมพ์บิลต่อได้','er');
+    alert("แจ้งเตือน: บันทึกข้อมูลเข้า Sheet ไม่สำเร็จ\n\nระบบจะทำการพิมพ์บิลให้ตามปกติ โปรดตรวจสอบอินเทอร์เน็ตหรือฝั่ง Google Sheet");
+  }
  
   // Build bill HTML
   const pallaTxt=d.pallaPrice?` | พาราเดียม: ${fmt(d.pallaPrice)} บ./บ.หนัก`:'';
   const goldRows=d.items.map(i=>`
     <tr>
       <td>${i.type}</td><td>${fmtD(i.wt)}</td><td>${fmtD(i.si)}%</td>
-      <td>${fmtD(i.netWt)}</td><td class="ppg">${fmtD(i.ppg)}</td><td class="amt">${fmt(i.total)}</td>
+      <td>${fmtD(i.netWeight)}</td><td class="ppg">${fmtD(i.pricePerGram)}</td><td class="amt">${fmt(i.total)}</td>
     </tr>`).join('');
   const laborRows=d.wages.map(w=>`
     <tr><td>${w.name}</td><td>${w.qty}</td><td>${fmt(w.total)}</td></tr>`).join('');
@@ -530,9 +551,9 @@ async function saveAndPrint(){
     </div>`;
  
   setTimeout(()=>{
+    // เปลี่ยนใช้ Event Listener ล้างข้อมูลเมื่อกดปริ้นจบแล้วเท่านั้น
+    window.addEventListener('afterprint', clearCustomerAndItems, { once: true });
     window.print();
-    // ล้างข้อมูลหลังพิมพ์
-    setTimeout(()=>clearCustomerAndItems(),800);
   },300);
 }
  
@@ -542,7 +563,6 @@ function clearCustomerAndItems(){
   document.getElementById('goldBody').innerHTML='';
   document.getElementById('laborBody').innerHTML='';
   gRows=[];lRows=[];
-  // อัปเดตเลขบิล
   seq++;
   const d=new Date();
   const ds=`${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
