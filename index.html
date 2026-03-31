@@ -54,4 +54,552 @@ tbody td input:focus{outline:none;border-color:#BA7517}
 .kpi{background:#2a2a2a;padding:8px;text-align:center;border-radius:8px;}
 .kl{font-size:10px;color:#aaa;margin-bottom:2px}.kv{font-size:19px;font-weight:bold;color:#fff}.ku{font-size:10px;color:#888}
 
-.totbar{background:#332810;border:1px solid #FAC775;border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;margin
+.totbar{background:#332810;border:1px solid #FAC775;border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.totlbl{font-size:13px;font-weight:bold;color:#FAC775}.totval{font-size:24px;font-weight:bold;color:#fff}
+
+.acts{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:5px}
+.btn{flex:1;min-width:100px;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer;border:1px solid;display:flex;align-items:center;justify-content:center;gap:4px}
+.bg{background:#BA7517;border-color:#854F0B;color:#fff}.bg:hover{background:#9a6010}
+.bo{background:#2c2c2c;border-color:#555;color:#e0e0e0}.bo:hover{background:#3a3a3a}
+
+.stbar{font-size:12px;text-align:center;min-height:16px;color:#888}
+.ok{color:#4caf50}.er{color:#f44336}
+
+/* ── PRINT (สว่างเหมือนเดิม) ── */
+#billPrintArea{display:none}
+@media print{
+  body{background:#fff!important;color:#000!important}
+  body>*{display:none!important}
+  #billPrintArea{display:block!important;background:#fff;color:#000}
+  @page{size:80mm auto;margin:0}
+}
+#billPrintArea{font-family:Arial,sans-serif;font-size:12px;width:72mm;margin:0 auto;padding:3mm 2mm}
+.bh{text-align:center;border-bottom:2.5px solid #000;padding-bottom:5px;margin-bottom:5px}
+.bh .sn{font-size:15px;font-weight:bold;letter-spacing:1px}
+.bh .sc{font-size:9px;color:#333;margin-top:3px;line-height:1.7}
+.bm{font-size:10px;border-bottom:1px dashed #999;padding-bottom:5px;margin-bottom:4px}
+.bm table{width:100%;border-collapse:collapse}
+.bm td{padding:1px 0;font-size:10px;border:none;color:#000}
+.bm td.r{text-align:right}
+.st{font-size:9px;font-weight:bold;text-transform:uppercase;letter-spacing:.05em;background:#eee;padding:2px 4px;border-top:1.5px solid #000;border-bottom:1px solid #bbb;margin:5px 0 0;color:#000}
+.git{width:100%;border-collapse:collapse;table-layout:fixed}
+.git th{font-size:8px;color:#000;font-weight:bold;padding:3px 2px;border:1px solid #bbb;text-align:center;background:#f2f2f2}
+.git td{font-size:10px;padding:4px 2px;border:1px solid #ddd;text-align:center;color:#000}
+.git td:first-child{font-weight:bold}
+.git td.ppg,.git td.amt{text-align:right}
+.git td.amt{font-weight:bold}
+.glt{width:100%;border-collapse:collapse}
+.glt th{font-size:8px;font-weight:bold;padding:3px;border:1px solid #bbb;text-align:center;background:#f2f2f2;color:#000}
+.glt td{font-size:10px;padding:4px 3px;border:1px solid #ddd;text-align:center;color:#000}
+.glt td:last-child{text-align:right;font-weight:bold}
+.tots{padding:5px 2px;border-top:1px dashed #999;margin-top:5px}
+.tl{display:flex;justify-content:space-between;font-size:10px;padding:1px 0;color:#333}
+.tl.g{font-size:15px;font-weight:bold;padding-top:5px;border-top:2.5px solid #000;margin-top:4px;color:#000}
+.bf{text-align:center;border-top:2px solid #000;padding-top:5px;margin-top:5px}
+.bf .thx{font-size:11px;font-weight:bold;color:#000}
+.bf .nt{font-size:9px;color:#666;margin-top:2px}
+@media(max-width:560px){.f2,.f3{grid-template-columns:1fr 1fr}.kpis{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+ 
+<div class="topbar">
+  <div class="ticon">&#x1F947;</div>
+  <div>
+    <div class="ttitle">โรงหล่อสุนทร เจริญนคร</div>
+    <div class="tsub">ระบบเปิดบิลทอง — สูตรจริงของโรงหล่อ (Dark Mode)</div>
+  </div>
+  <div class="billno"><div id="billno"></div><div id="todayTxt" style="font-size:10px"></div></div>
+</div>
+ 
+<div class="card">
+  <div class="sl">ข้อมูลลูกค้า</div>
+  <div class="fg f3">
+    <div class="fi" style="grid-column:span 2">
+      <label>ชื่อลูกค้า / ร้าน <span style="color:#BA7517;font-size:10px">(พิมพ์แล้วระบบจำให้อัตโนมัติ)</span></label>
+      <div class="cust-wrap">
+        <input type="text" id="customer" placeholder="พิมพ์หรือเลือกชื่อลูกค้า" autocomplete="off"
+          oninput="onCustInput()" onfocus="onCustFocus()" onblur="setTimeout(hideCustDD,200)">
+        <div class="cust-dropdown" id="custDD"></div>
+      </div>
+    </div>
+    <div class="fi">
+      <label>วันที่รับงาน</label>
+      <input type="text" id="orderDate" class="locked" readonly>
+      <input type="hidden" id="orderDateISO">
+    </div>
+  </div>
+  <div class="fg f2">
+    <div class="fi">
+      <label>ราคาทอง (บาท/บาทหนัก)</label>
+      <input type="number" id="goldPrice" placeholder="เช่น 72,100" oninput="onGC()">
+    </div>
+    <div class="fi">
+      <label>ราคาพาราเดียม (บาท/บาทหนัก)</label>
+      <input type="number" id="pallaPrice" placeholder="เช่น 34,100" oninput="onGC()">
+    </div>
+  </div>
+  <div class="pills" id="pills"></div>
+</div>
+ 
+<div class="card">
+  <div class="sl">รายการทอง</div>
+  <div style="overflow-x:auto"><table>
+    <thead><tr>
+      <th style="width:115px">ประเภท</th>
+      <th style="width:90px">น้ำหนัก (g)</th>
+      <th style="width:70px">ซิ (%)</th>
+      <th style="width:85px">สุทธิ (g)</th>
+      <th style="width:95px">ราคากรัมละ</th>
+      <th style="width:95px">ยอดเงิน</th>
+      <th style="width:28px"></th>
+    </tr></thead>
+    <tbody id="goldBody"></tbody>
+  </table></div>
+  <button class="badd" onclick="addG()">+ เพิ่มรายการทอง</button>
+</div>
+ 
+<div class="card">
+  <div class="sl">ค่าแรง / อื่นๆ</div>
+  <div style="overflow-x:auto"><table>
+    <thead><tr>
+      <th style="width:200px">รายการ</th>
+      <th style="width:75px">จำนวน</th>
+      <th style="width:110px">ราคา/หน่วย (บาท)</th>
+      <th style="width:95px">ยอดเงิน</th>
+      <th style="width:28px"></th>
+    </tr></thead>
+    <tbody id="laborBody"></tbody>
+  </table></div>
+  <button class="badd" onclick="addL()">+ เพิ่มรายการ</button>
+</div>
+ 
+<div class="kpis">
+  <div class="kpi"><div class="kl">น้ำหนักสุทธิรวม</div><div class="kv" id="kWt">0.00</div><div class="ku">กรัม</div></div>
+  <div class="kpi"><div class="kl">มูลค่าทองรวม</div><div class="kv" id="kGold">0</div><div class="ku">บาท</div></div>
+  <div class="kpi"><div class="kl">ค่าแรง/อื่นๆ</div><div class="kv" id="kLabor">0</div><div class="ku">บาท</div></div>
+</div>
+ 
+<div class="totbar">
+  <div class="totlbl">รวมทั้งบิล</div>
+  <div class="totval" id="grandTotal">0 บาท</div>
+</div>
+ 
+<div class="card">
+  <div class="sl">หมายเหตุ</div>
+  <textarea id="note" rows="2" style="width:100%;border:1px solid #444;border-radius:7px;padding:7px;font-size:13px;resize:vertical;font-family:Arial;background:#2c2c2c;color:#fff" placeholder="เช่น resin ยี่ห้อ, สีพิเศษ..."></textarea>
+</div>
+ 
+<div class="acts">
+  <button class="btn bg" onclick="saveAndPrint()">&#x1F4BE; บันทึก + พิมพ์บิล</button>
+  <button class="btn bo" onclick="clearAll()">&#x1F504; บิลใหม่</button>
+</div>
+<div class="stbar" id="stbar"></div>
+</div>
+ 
+<div id="billPrintArea"></div>
+ 
+<script>
+const RATE=0.000656, BW=15.244;
+const SHOP_NAME='โรงหล่อสุนทร เจริญนคร';
+const SHOP_TEL='08x-xxx-xxxx';
+const SHOP_LINE='@sunthorncast';
+ 
+// ── rateMap ──
+const RM={
+  "96.5%":     {pct:96.5, add:0,  si:0},
+  "90% เต็ม": {pct:95,   add:10, si:1.5},
+  "90%":       {pct:90,   add:10, si:1.5},
+  "85%":       {pct:85,   add:10, si:1.5},
+  "80%/18k":   {pct:80,   add:10, si:1.5},
+  "63.5%/14k": {pct:63,   add:10, si:1.5},
+  "18AL":      {pct:80,   add:10, si:1.5},
+  "18P":       {pct:80,   add:15, si:1.5},
+  "18V":       {pct:80,   add:15, si:1.5},
+  "14AL":      {pct:63,   add:10, si:1.5},
+  "14P":       {pct:44.7, add:15, si:2},
+  "14V":       {pct:44.7, add:15, si:2},
+  "10Y":       {pct:44.7, add:10, si:2},
+  "10AL":      {pct:44.7, add:12, si:2},
+  "10P":       {pct:44.7, add:15, si:2},
+  "10V":       {pct:44.7, add:15, si:2},
+  "9Y":        {pct:40.7, add:10, si:2},
+  "9AL":       {pct:40.7, add:12, si:2},
+  "9P":        {pct:40.7, add:15, si:2},
+  "9V":        {pct:40.7, add:15, si:2},
+  "ชค":        {pct:35,   add:15, si:2},
+  "18k ขาว":   {pct:80,   add:10, si:1.5, isPalla:true, pinkAdd:0},
+  "18k ชมพู":  {pct:80,   add:10, si:1.5, isPalla:true, pinkAdd:8},
+  "10k ขาว":   {pct:44.7, add:10, si:2,   isPalla:true, pinkAdd:0},
+  "10k ชมพู":  {pct:44.7, add:10, si:2,   isPalla:true, pinkAdd:2},
+  "9k ขาว":    {pct:40.7, add:10, si:2,   isPalla:true, pinkAdd:0},
+  "9k ชมพู":   {pct:40.7, add:10, si:2,   isPalla:true, pinkAdd:2},
+  "ปากั้ม":   {pct:10.5, add:3,  si:0,   isPalla:true, pinkAdd:0},
+};
+ 
+let gRows=[],lRows=[],seq=1;
+ 
+function loadCustomers(){return JSON.parse(localStorage.getItem('goldCustomers')||'[]');}
+function saveCustomer(name){
+  if(!name.trim())return;
+  let list=loadCustomers();
+  if(!list.includes(name.trim())){list.unshift(name.trim());localStorage.setItem('goldCustomers',JSON.stringify(list));}
+}
+function onCustInput(){
+  const q=document.getElementById('customer').value.trim().toLowerCase();
+  const list=loadCustomers();
+  const filtered=q?list.filter(c=>c.toLowerCase().includes(q)):list;
+  renderDD(filtered,q);
+}
+function onCustFocus(){
+  const list=loadCustomers();
+  renderDD(list,'');
+}
+function renderDD(list,q){
+  const dd=document.getElementById('custDD');
+  if(!list.length&&!q){dd.classList.remove('show');return;}
+  let html=list.map(c=>`<div class="cust-item" onmousedown="selectCust('${c.replace(/'/g,"&#39;")}')">${c}</div>`).join('');
+  if(q&&!list.find(c=>c.toLowerCase()===q.toLowerCase())){
+    html+=`<div class="cust-item new" onmousedown="selectCust('${q}')">+ บันทึก "${q}" เป็นลูกค้าใหม่</div>`;
+  }
+  dd.innerHTML=html;
+  dd.classList.add('show');
+}
+function selectCust(name){
+  document.getElementById('customer').value=name;
+  hideCustDD();
+}
+function hideCustDD(){document.getElementById('custDD').classList.remove('show');}
+ 
+function todayISO(){return new Date().toISOString().split('T')[0];}
+function thaiDate(iso){
+  if(!iso)return'-';
+  const[y,m,d]=iso.split('-');
+  const mn=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  return`${+d} ${mn[+m-1]} ${+y+543}`;
+}
+function thaiNow(){
+  const d=new Date();
+  const mn=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  return`${d.getDate()} ${mn[d.getMonth()]} ${d.getFullYear()+543}`;
+}
+function fmt(n){return isNaN(n)?'-':Math.round(n).toLocaleString('th-TH');}
+function fmtD(n,d=2){return isNaN(n)?'-':parseFloat(n.toFixed(d)).toLocaleString('th-TH',{minimumFractionDigits:d,maximumFractionDigits:d});}
+function gp(){return parseFloat(document.getElementById('goldPrice').value)||0;}
+function pp(){return parseFloat(document.getElementById('pallaPrice').value)||0;}
+function v(id){return(document.getElementById(id).value||'').trim();}
+ 
+function calcPPG(type){
+  const info=RM[type];if(!info)return 0;
+  const price=info.isPalla?pp():gp();
+  if(!price)return 0;
+  const base=info.pct*RATE*price+info.add;
+  return base+(info.pinkAdd||0);
+}
+ 
+function onGC(){
+  const p=gp();
+  const el=document.getElementById('pills');el.innerHTML='';
+  if(p||pp()){
+    const show=p?['96.5%','90%','80%/18k','63.5%/14k']:[];
+    if(pp())show.push(...['18k ขาว','18k ชมพู','9k ขาว','9k ชมพู','ปากั้ม']);
+    show.forEach(t=>{
+      const v2=calcPPG(t);if(!v2)return;
+      const d=document.createElement('div');d.className='pill';
+      d.innerHTML=`${t}: <b>${fmtD(v2)} บ./g</b>`;el.appendChild(d);
+    });
+  }
+  gRows.forEach(id=>recalcG(id));recalcTotals();
+}
+ 
+function addG(){
+  const id='g'+Date.now()+Math.floor(Math.random()*1000);
+  gRows.push(id);
+  const tb=document.getElementById('goldBody');
+  const tr=document.createElement('tr');tr.id=id;
+  const opts=Object.keys(RM).map(k=>`<option value="${k}">${k}</option>`).join('');
+  tr.innerHTML=`
+    <td><select onchange="recalcG('${id}')">${opts}</select></td>
+    <td><input type="number" step="0.01" min="0" placeholder="0.00" oninput="recalcG('${id}')"></td>
+    <td><input type="number" step="0.1" min="0" placeholder="อัตโนมัติ" oninput="recalcG('${id}')" title="ปล่อยว่าง=คำนวณให้อัตโนมัติ"></td>
+    <td><input class="rc" readonly></td>
+    <td><input class="rc" readonly></td>
+    <td><input class="rc" readonly></td>
+    <td><button class="del" onclick="delRow('${id}','g')">&#xD7;</button></td>`;
+  tb.appendChild(tr);recalcG(id);
+}
+ 
+function recalcG(id){
+  const tr=document.getElementById(id);if(!tr)return;
+  const sel=tr.querySelector('select');
+  const inp=tr.querySelectorAll('input');
+  const info=RM[sel.value]||{si:0};
+  const wt=parseFloat(inp[0].value)||0;
+  const siManual=inp[1].value!==''?parseFloat(inp[1].value):null;
+  const si=siManual!==null?siManual:info.si;
+  const netWt=wt+(wt*si/100);
+  const ppg=calcPPG(sel.value);
+  inp[2].value=fmtD(netWt);
+  inp[3].value=(gp()||pp())?fmtD(ppg):'-';
+  inp[4].value=(gp()||pp())&&wt?fmt(netWt*ppg):'-';
+  recalcTotals();
+}
+ 
+function addL(){
+  const id='l'+Date.now()+Math.floor(Math.random()*1000);
+  lRows.push(id);
+  const tb=document.getElementById('laborBody');
+  const tr=document.createElement('tr');tr.id=id;
+  tr.innerHTML=`
+    <td>
+      <select id="lsel_${id}" onchange="toggleLaborName('${id}',this)" style="height:29px;padding:0 5px;border:1px solid #444;border-radius:5px;font-size:12px;width:100%;background:#2c2c2c;color:#fff">
+        <option value="ค่าแรง">ค่าแรง</option>
+        <option value="อื่นๆ">อื่นๆ (กรอกเอง)</option>
+      </select>
+      <input type="text" id="lname_${id}" placeholder="ระบุรายการ..." style="display:none;margin-top:3px;height:29px;padding:0 5px;border:1px solid #444;border-radius:5px;font-size:12px;width:100%;background:#2c2c2c;color:#fff">
+    </td>
+    <td><input type="number" min="0" step="1" value="1" oninput="recalcL('${id}')"></td>
+    <td><input type="number" min="0" step="1" placeholder="0" oninput="recalcL('${id}')"></td>
+    <td><input class="rc" readonly></td>
+    <td><button class="del" onclick="delRow('${id}','l')">&#xD7;</button></td>`;
+  tb.appendChild(tr);
+}
+ 
+function toggleLaborName(id,sel){
+  const inp=document.getElementById('lname_'+id);
+  inp.style.display=sel.value==='อื่นๆ'?'block':'none';
+}
+ 
+function recalcL(id){
+  const tr=document.getElementById(id);if(!tr)return;
+  const tds=tr.querySelectorAll('td');
+  const qInp=tds[1]?tds[1].querySelector('input'):null;
+  const pInp=tds[2]?tds[2].querySelector('input'):null;
+  const totInp=tds[3]?tds[3].querySelector('input'):null;
+  if(!qInp||!pInp||!totInp)return;
+  const q=parseFloat(qInp.value)||0,p=parseFloat(pInp.value)||0;
+  totInp.value=q&&p?fmt(q*p):'-';
+  recalcTotals();
+}
+ 
+function delRow(id,type){
+  const el=document.getElementById(id);if(el)el.remove();
+  if(type==='g')gRows=gRows.filter(r=>r!==id);
+  else lRows=lRows.filter(r=>r!==id);
+  recalcTotals();
+}
+ 
+function recalcTotals(){
+  let tWt=0,tGold=0,tLabor=0;
+  gRows.forEach(id=>{
+    const tr=document.getElementById(id);if(!tr)return;
+    const sel=tr.querySelector('select');
+    const inp=tr.querySelectorAll('input');
+    const wt=parseFloat(inp[0].value)||0;if(!wt)return;
+    const info=RM[sel.value]||{si:0};
+    const siManual=inp[1].value!==''?parseFloat(inp[1].value):null;
+    const si=siManual!==null?siManual:info.si;
+    tWt+=wt+(wt*si/100);
+    tGold+=(wt+(wt*si/100))*calcPPG(sel.value);
+  });
+  lRows.forEach(id=>{
+    const tr=document.getElementById(id);if(!tr)return;
+    const tds=tr.querySelectorAll('td');
+    const qInp=tds[1]?tds[1].querySelector('input'):null;
+    const pInp=tds[2]?tds[2].querySelector('input'):null;
+    const q=parseFloat(qInp?qInp.value:0)||0;
+    const p=parseFloat(pInp?pInp.value:0)||0;
+    if(q&&p)tLabor+=q*p;
+  });
+  document.getElementById('kWt').textContent=fmtD(tWt);
+  document.getElementById('kGold').textContent=fmt(tGold);
+  document.getElementById('kLabor').textContent=fmt(tLabor);
+  document.getElementById('grandTotal').textContent=fmt(tGold+tLabor)+' บาท';
+}
+ 
+function buildData(){
+  const items=[];
+  gRows.forEach(id=>{
+    const tr=document.getElementById(id);if(!tr)return;
+    const sel=tr.querySelector('select');
+    const inp=tr.querySelectorAll('input');
+    const wt=parseFloat(inp[0].value)||0;if(!wt)return;
+    const info=RM[sel.value]||{si:0};
+    const siManual=inp[1].value!==''?parseFloat(inp[1].value):null;
+    const si=siManual!==null?siManual:info.si;
+    const netWt=wt+(wt*si/100);
+    const ppg=calcPPG(sel.value);
+    
+    // โครงสร้างเพื่อใช้วาดบิลตอนปริ้น และส่งเข้าหลังบ้าน
+    items.push({
+      type:sel.value,
+      wt:wt,
+      si:si,
+      netWeight:netWt,
+      pricePerGram:ppg,
+      total:netWt*ppg
+    });
+  });
+  const wages=[];
+  lRows.forEach(id=>{
+    const tr=document.getElementById(id);if(!tr)return;
+    const sel=document.getElementById('lsel_'+id);
+    const nameInp=document.getElementById('lname_'+id);
+    const name=sel&&sel.value==='อื่นๆ'&&nameInp?nameInp.value||'อื่นๆ':sel?sel.value:'ค่าแรง';
+    const tds=tr.querySelectorAll('td');
+    const qInp=tds[1]?tds[1].querySelector('input'):null;
+    const pInp=tds[2]?tds[2].querySelector('input'):null;
+    const q=parseFloat(qInp?qInp.value:0)||0;
+    const p=parseFloat(pInp?pInp.value:0)||0;
+    if(q&&p)wages.push({name,qty:q,price:p,total:q*p});
+  });
+  const goldTotal=items.reduce((s,i)=>s+i.total,0);
+  const laborTotal=wages.reduce((s,w)=>s+w.total,0);
+  return{
+    billNo:document.getElementById('billno').textContent,
+    date:document.getElementById('orderDateISO').value||v('orderDate'),customer:v('customer')||'(ไม่ระบุ)',
+    goldPrice:gp(),pallaPrice:pp(),note:v('note'),
+    items,wages,goldTotal,laborTotal,grandTotal:goldTotal+laborTotal
+  };
+}
+ 
+function setSt(msg,type=''){
+  const el=document.getElementById('stbar');
+  el.textContent=msg;el.className='stbar '+(type==='ok'?'ok':type==='er'?'er':'');
+}
+ 
+async function saveAndPrint(){
+  const d=buildData();
+ 
+  if(d.customer&&d.customer!=='(ไม่ระบุ)')saveCustomer(d.customer);
+  setSt('กำลังบันทึก Google Sheets...');
+  
+  // แปลงข้อมูลให้ตรงกับที่ Google Sheet คาดหวัง
+  const payloadItems = d.items.map(i => ({
+    type: i.type,
+    netWeight: Number(i.netWeight),
+    pricePerGram: Number(i.pricePerGram),
+    total: Number(i.total)
+  }));
+
+  const payload = {
+    date: d.date,
+    customer: d.customer === '(ไม่ระบุ)' ? "" : d.customer,
+    items: payloadItems,
+    totalWage: Number(d.laborTotal),
+    grandTotal: Number(d.grandTotal)
+  };
+
+  try {
+    // 🟢 กลับมาใช้ application/json แบบปกติ หลังจากแก้ Backend แล้ว
+    const res = await fetch('https://sheet-r6izw2eudq-uc.a.run.app', {
+      redirect: 'follow',
+      method: 'POST',
+      body: JSON.stringify(payload),
+      headers: { 'Content-Type': 'application/json' } 
+    });
+    
+    if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(`Status ${res.status}: ${errText}`);
+    }
+    
+    setSt('บันทึก Google Sheets เรียบร้อย', 'ok');
+  } catch(e) {
+    console.error("Fetch Error:", e);
+    setSt('บันทึกไม่สำเร็จ — พิมพ์บิลต่อได้', 'er');
+    alert("แจ้งเตือน: บันทึกข้อมูลเข้า Sheet ไม่สำเร็จ\n\nสาเหตุ: " + e.message + "\n\n(ลองตรวจสอบว่า Deploy Backend ตัวใหม่เสร็จสมบูรณ์หรือยังครับ)");
+  }
+ 
+  // Build bill HTML (สว่างตอนปริ้นเหมือนเดิม)
+  const pallaTxt=d.pallaPrice?` | พาราเดียม: ${fmt(d.pallaPrice)} บ./บ.หนัก`:'';
+  const goldRows=d.items.map(i=>`
+    <tr>
+      <td>${i.type}</td><td>${fmtD(i.wt)}</td><td>${fmtD(i.si)}%</td>
+      <td>${fmtD(i.netWeight)}</td><td class="ppg">${fmtD(i.pricePerGram)}</td><td class="amt">${fmt(i.total)}</td>
+    </tr>`).join('');
+  const laborRows=d.wages.map(w=>`
+    <tr><td>${w.name}</td><td>${w.qty}</td><td>${fmt(w.total)}</td></tr>`).join('');
+ 
+  document.getElementById('billPrintArea').innerHTML=`
+    <div class="bh">
+      <div class="sn">${SHOP_NAME}</div>
+      <div class="sc">Tel: ${SHOP_TEL}<br>LINE: ${SHOP_LINE}</div>
+    </div>
+    <div class="bm">
+      <table>
+        <tr><td><b>วันที่:</b> ${thaiDate(d.date)}</td><td class="r"><b>ทอง:</b> ${fmt(d.goldPrice)} บ.</td></tr>
+        ${d.pallaPrice?`<tr><td colspan="2"><b>พาราเดียม:</b> ${fmt(d.pallaPrice)} บ./บ.หนัก</td></tr>`:''}
+        <tr><td><b>เลขที่บิล:</b> ${d.billNo}</td><td class="r"><b>ลูกค้า:</b> ${d.customer}</td></tr>
+      </table>
+    </div>
+    <div class="st">รายการทอง</div>
+    <table class="git">
+      <thead><tr>
+        <th style="width:16%">ทอง</th><th style="width:16%">น้ำหนัก</th><th style="width:10%">ซิ</th>
+        <th style="width:16%">สุทธิ(g)</th><th style="width:20%">ราคากรัมละ</th><th style="width:22%">ยอดเงิน</th>
+      </tr></thead>
+      <tbody>${goldRows||'<tr><td colspan="6" style="text-align:center;color:#aaa;font-size:9px;padding:5px">ไม่มีรายการ</td></tr>'}</tbody>
+    </table>
+    ${d.wages.length?`
+    <div class="st">ค่าแรง / อื่นๆ</div>
+    <table class="glt">
+      <thead><tr><th style="width:50%">รายการ</th><th style="width:20%">จำนวน</th><th style="width:30%">ยอดเงิน</th></tr></thead>
+      <tbody>${laborRows}</tbody>
+    </table>`:''}
+    <div class="tots">
+      <div class="tl"><span>มูลค่าทองรวม</span><span>${fmt(d.goldTotal)} บาท</span></div>
+      ${d.wages.length?`<div class="tl"><span>ค่าแรง/อื่นๆ</span><span>${fmt(d.laborTotal)} บาท</span></div>`:''}
+      <div class="tl g"><span>รวมทั้งบิล</span><span>${fmt(d.grandTotal)} บาท</span></div>
+    </div>
+    ${d.note?`<div style="padding:4px 2px;font-size:9px;color:#555;font-style:italic;border-top:1px dashed #ccc;margin-top:4px">หมายเหตุ: ${d.note}</div>`:''}
+    <div style="padding:4px 2px;font-size:8px;color:#555;border-top:1px dashed #ccc;margin-top:4px;line-height:1.5">
+      ***โปรดตรวจทานบิล และน้ำหนักทอง โดยจะไม่ได้แย้งหรือนำไปเป็นข้อผูกพันทางกฎหมายเพื่อเรียกร้องค่าเสียหาย
+    </div>
+    <div class="bf">
+      <div class="thx">ขอบคุณที่ใช้บริการ</div>
+      <div class="nt">กรุณาตรวจสอบรายการก่อนชำระเงิน</div>
+    </div>`;
+ 
+  setTimeout(()=>{
+    window.addEventListener('afterprint', clearCustomerAndItems, { once: true });
+    window.print();
+  },300);
+}
+ 
+function clearCustomerAndItems(){
+  document.getElementById('customer').value='';
+  document.getElementById('note').value='';
+  document.getElementById('goldBody').innerHTML='';
+  document.getElementById('laborBody').innerHTML='';
+  gRows=[];lRows=[];
+  seq++;
+  const d=new Date();
+  const ds=`${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+  document.getElementById('billno').textContent=`BIL-${ds}-${String(seq).padStart(3,'0')}`;
+  setSt('พร้อมรับลูกค้าคนต่อไป','ok');
+  addG();addL();recalcTotals();
+}
+ 
+function clearAll(){
+  clearCustomerAndItems();
+  document.getElementById('goldPrice').value='';
+  document.getElementById('pallaPrice').value='';
+  document.getElementById('pills').innerHTML='';
+  setSt('');
+}
+ 
+(function init(){
+  const d=new Date();
+  const ds=`${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+  document.getElementById('billno').textContent=`BIL-${ds}-001`;
+  document.getElementById('todayTxt').textContent=thaiNow();
+  const _d=new Date();
+  document.getElementById('orderDate').value=thaiNow();
+  document.getElementById('orderDateISO').value=_d.toISOString().split('T')[0];
+  addG();addL();recalcTotals();
+})();
+</script>
+</body>
+</html>
