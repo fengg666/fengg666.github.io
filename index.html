@@ -51,7 +51,7 @@ tbody td input:focus{outline:none;border-color:#BA7517}
 .del:hover{background:#522;border-color:#a44;color:#f66}
 
 .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px}
-.kpi{background:#2a2a2a;border:radius:8px;padding:8px;text-align:center;border-radius:8px;}
+.kpi{background:#2a2a2a;padding:8px;text-align:center;border-radius:8px;}
 .kl{font-size:10px;color:#aaa;margin-bottom:2px}.kv{font-size:19px;font-weight:bold;color:#fff}.ku{font-size:10px;color:#888}
 
 .totbar{background:#332810;border:1px solid #FAC775;border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
@@ -314,7 +314,6 @@ function onGC(){
 }
  
 function addG(){
-  // ใช้ Random ป้องกัน ID ซ้ำเวลากดรัวๆ
   const id='g'+Date.now()+Math.floor(Math.random()*1000);
   gRows.push(id);
   const tb=document.getElementById('goldBody');
@@ -432,7 +431,7 @@ function buildData(){
     const netWt=wt+(wt*si/100);
     const ppg=calcPPG(sel.value);
     
-    // ตรงคีย์เวิร์ดนี้แก้กลับไปเหมือนโค้ดเก่าเพื่อให้ Sheet มองเห็นข้อมูล
+    // โครงสร้างภายในเพื่อใช้วาดบิลตอนปริ้น
     items.push({
       type:sel.value,
       wt:wt,
@@ -474,33 +473,47 @@ async function saveAndPrint(){
   const d=buildData();
  
   if(d.customer&&d.customer!=='(ไม่ระบุ)')saveCustomer(d.customer);
- 
   setSt('กำลังบันทึก Google Sheets...');
   
+  // จัดเตรียมข้อมูลส่งออกให้โครงสร้างเหมือนโค้ดเก่าเป๊ะๆ ไม่มีตัวแปรเกิน
+  const payloadItems = d.items.map(i => ({
+    type: i.type,
+    netWeight: i.netWeight,
+    pricePerGram: i.pricePerGram,
+    total: i.total
+  }));
+
+  const payload = {
+    date: d.date,
+    customer: d.customer === '(ไม่ระบุ)' ? "" : d.customer,
+    items: payloadItems,
+    totalWage: d.laborTotal,
+    grandTotal: d.grandTotal
+  };
+
   try{
     const res = await fetch('https://sheet-r6izw2eudq-uc.a.run.app',{
       redirect:'follow',
       method:'POST',
-      body:JSON.stringify({
-        date:d.date,
-        customer:d.customer,
-        items:d.items,
-        totalWage:d.laborTotal,
-        grandTotal:d.grandTotal
-      }),
+      body:JSON.stringify(payload),
       headers:{'Content-Type':'application/json'}
     });
     
-    if (!res.ok) throw new Error(`Server Error: ${res.status}`);
+    if (!res.ok) {
+        // ดึงข้อความ Error จากหลังบ้านมาดู
+        const errText = await res.text();
+        throw new Error(`Status ${res.status} - ${errText}`);
+    }
     
     setSt('บันทึก Google Sheets เรียบร้อย','ok');
   }catch(e){
-    console.error(e);
+    console.error("Fetch Error:", e);
     setSt('บันทึกไม่สำเร็จ — พิมพ์บิลต่อได้','er');
-    alert("แจ้งเตือน: บันทึกข้อมูลเข้า Sheet ไม่สำเร็จ\n\nระบบจะทำการพิมพ์บิลให้ตามปกติ โปรดตรวจสอบอินเทอร์เน็ตหรือฝั่ง Google Sheet");
+    // โชว์ Alert พร้อมข้อความ Error ให้คุณเบียร์แคปรูปมาให้ผมวิเคราะห์ต่อ
+    alert("แจ้งเตือน: บันทึกข้อมูลเข้า Sheet ไม่สำเร็จ\n\nสาเหตุ: " + e.message + "\n\nรบกวนแคปหน้าจอนี้ หรือแจ้งข้อความสาเหตุ เพื่อตรวจสอบกับระบบหลังบ้านครับ");
   }
  
-  // Build bill HTML
+  // Build bill HTML (คงความสว่างตอนปริ้นเหมือนเดิม)
   const pallaTxt=d.pallaPrice?` | พาราเดียม: ${fmt(d.pallaPrice)} บ./บ.หนัก`:'';
   const goldRows=d.items.map(i=>`
     <tr>
@@ -551,7 +564,6 @@ async function saveAndPrint(){
     </div>`;
  
   setTimeout(()=>{
-    // เปลี่ยนใช้ Event Listener ล้างข้อมูลเมื่อกดปริ้นจบแล้วเท่านั้น
     window.addEventListener('afterprint', clearCustomerAndItems, { once: true });
     window.print();
   },300);
