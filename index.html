@@ -431,7 +431,6 @@ function buildData(){
     const netWt=wt+(wt*si/100);
     const ppg=calcPPG(sel.value);
     
-    // โครงสร้างภายในเพื่อใช้วาดบิลตอนปริ้น
     items.push({
       type:sel.value,
       wt:wt,
@@ -475,45 +474,41 @@ async function saveAndPrint(){
   if(d.customer&&d.customer!=='(ไม่ระบุ)')saveCustomer(d.customer);
   setSt('กำลังบันทึก Google Sheets...');
   
-  // จัดเตรียมข้อมูลส่งออกให้โครงสร้างเหมือนโค้ดเก่าเป๊ะๆ ไม่มีตัวแปรเกิน
+  // แปลงข้อมูลให้ตรงกับที่ Google Sheet คาดหวัง
   const payloadItems = d.items.map(i => ({
     type: i.type,
-    netWeight: i.netWeight,
-    pricePerGram: i.pricePerGram,
-    total: i.total
+    netWeight: Number(i.netWeight),
+    pricePerGram: Number(i.pricePerGram),
+    total: Number(i.total)
   }));
 
   const payload = {
     date: d.date,
     customer: d.customer === '(ไม่ระบุ)' ? "" : d.customer,
     items: payloadItems,
-    totalWage: d.laborTotal,
-    grandTotal: d.grandTotal
+    totalWage: Number(d.laborTotal),
+    grandTotal: Number(d.grandTotal)
   };
 
-  try{
-    const res = await fetch('https://sheet-r6izw2eudq-uc.a.run.app',{
-      redirect:'follow',
-      method:'POST',
-      body:JSON.stringify(payload),
-      headers:{'Content-Type':'application/json'}
+  try {
+    // 🔴 จุดเปลี่ยนสำคัญ: เปลี่ยน Content-Type เป็น text/plain เพื่อทะลวงบล็อก CORS บน Github Pages 
+    const res = await fetch('https://sheet-r6izw2eudq-uc.a.run.app', {
+      redirect: 'follow',
+      method: 'POST',
+      body: JSON.stringify(payload),
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' } 
     });
     
-    if (!res.ok) {
-        // ดึงข้อความ Error จากหลังบ้านมาดู
-        const errText = await res.text();
-        throw new Error(`Status ${res.status} - ${errText}`);
-    }
+    if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
     
-    setSt('บันทึก Google Sheets เรียบร้อย','ok');
-  }catch(e){
+    setSt('บันทึก Google Sheets เรียบร้อย', 'ok');
+  } catch(e) {
     console.error("Fetch Error:", e);
-    setSt('บันทึกไม่สำเร็จ — พิมพ์บิลต่อได้','er');
-    // โชว์ Alert พร้อมข้อความ Error ให้คุณเบียร์แคปรูปมาให้ผมวิเคราะห์ต่อ
+    setSt('บันทึกไม่สำเร็จ — พิมพ์บิลต่อได้', 'er');
     alert("แจ้งเตือน: บันทึกข้อมูลเข้า Sheet ไม่สำเร็จ\n\nสาเหตุ: " + e.message + "\n\nรบกวนแคปหน้าจอนี้ หรือแจ้งข้อความสาเหตุ เพื่อตรวจสอบกับระบบหลังบ้านครับ");
   }
  
-  // Build bill HTML (คงความสว่างตอนปริ้นเหมือนเดิม)
+  // Build bill HTML (สว่างตอนปริ้นเหมือนเดิม)
   const pallaTxt=d.pallaPrice?` | พาราเดียม: ${fmt(d.pallaPrice)} บ./บ.หนัก`:'';
   const goldRows=d.items.map(i=>`
     <tr>
