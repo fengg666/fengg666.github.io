@@ -375,9 +375,14 @@ function toggleLaborName(id,sel){
 
 function recalcL(id){
   const tr=document.getElementById(id);if(!tr)return;
-  const inp=tr.querySelectorAll('input');
-  const q=parseFloat(inp[0].value)||0,p=parseFloat(inp[1].value)||0;
-  inp[2].value=q&&p?fmt(q*p):'-';
+  // ดึง input จาก td แต่ละช่องแยกกัน เพราะ td แรกมี hidden input ด้วย
+  const tds=tr.querySelectorAll('td');
+  const qInp=tds[1]?tds[1].querySelector('input'):null;
+  const pInp=tds[2]?tds[2].querySelector('input'):null;
+  const totInp=tds[3]?tds[3].querySelector('input'):null;
+  if(!qInp||!pInp||!totInp)return;
+  const q=parseFloat(qInp.value)||0,p=parseFloat(pInp.value)||0;
+  totInp.value=q&&p?fmt(q*p):'-';
   recalcTotals();
 }
 
@@ -403,8 +408,11 @@ function recalcTotals(){
   });
   lRows.forEach(id=>{
     const tr=document.getElementById(id);if(!tr)return;
-    const inp=tr.querySelectorAll('input');
-    const q=parseFloat(inp[0].value)||0,p=parseFloat(inp[1].value)||0;
+    const tds=tr.querySelectorAll('td');
+    const qInp=tds[1]?tds[1].querySelector('input'):null;
+    const pInp=tds[2]?tds[2].querySelector('input'):null;
+    const q=parseFloat(qInp?qInp.value:0)||0;
+    const p=parseFloat(pInp?pInp.value:0)||0;
     if(q&&p)tLabor+=q*p;
   });
   document.getElementById('kWt').textContent=fmtD(tWt);
@@ -433,8 +441,11 @@ function buildData(){
     const sel=document.getElementById('lsel_'+id);
     const nameInp=document.getElementById('lname_'+id);
     const name=sel&&sel.value==='อื่นๆ'&&nameInp?nameInp.value||'อื่นๆ':sel?sel.value:'ค่าแรง';
-    const inp=tr.querySelectorAll('input');
-    const q=parseFloat(inp[0].value)||0,p=parseFloat(inp[1].value)||0;
+    const tds=tr.querySelectorAll('td');
+    const qInp=tds[1]?tds[1].querySelector('input'):null;
+    const pInp=tds[2]?tds[2].querySelector('input'):null;
+    const q=parseFloat(qInp?qInp.value:0)||0;
+    const p=parseFloat(pInp?pInp.value:0)||0;
     if(q&&p)wages.push({name,qty:q,price:p,total:q*p});
   });
   const goldTotal=items.reduce((s,i)=>s+i.total,0);
