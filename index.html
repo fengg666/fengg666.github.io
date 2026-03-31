@@ -116,6 +116,7 @@ tbody td input:focus{outline:none;border-color:#BA7517}
     <div class="fi">
       <label>วันที่รับงาน</label>
       <input type="text" id="orderDate" class="locked" readonly>
+      <input type="hidden" id="orderDateISO">
     </div>
   </div>
   <div class="fg f2">
@@ -361,7 +362,7 @@ function addL(){
       <input type="text" id="lname_${id}" placeholder="ระบุรายการ..." style="display:none;margin-top:3px;height:29px;padding:0 5px;border:1px solid #ddd;border-radius:5px;font-size:12px;width:100%">
     </td>
     <td><input type="number" min="0" step="1" value="1" oninput="recalcL('${id}')"></td>
-    <td><input type="number" min="0" step="0.01" placeholder="0" oninput="recalcL('${id}')"></td>
+    <td><input type="number" min="0" step="1" placeholder="0" oninput="recalcL('${id}')" style="background:#fff;border:1px solid #ddd;color:#111"></td>
     <td><input class="rc" readonly></td>
     <td><button class="del" onclick="delRow('${id}','l')">&#xD7;</button></td>`;
   tb.appendChild(tr);
@@ -440,7 +441,7 @@ function buildData(){
   const laborTotal=wages.reduce((s,w)=>s+w.total,0);
   return{
     billNo:document.getElementById('billno').textContent,
-    date:v('orderDate'),customer:v('customer')||'(ไม่ระบุ)',
+    date:document.getElementById('orderDateISO').value||v('orderDate'),customer:v('customer')||'(ไม่ระบุ)',
     goldPrice:gp(),pallaPrice:pp(),note:v('note'),
     items,wages,goldTotal,laborTotal,grandTotal:goldTotal+laborTotal
   };
@@ -486,7 +487,7 @@ async function saveAndPrint(){
       <table>
         <tr><td><b>วันที่:</b> ${thaiDate(d.date)}</td><td class="r"><b>ทอง:</b> ${fmt(d.goldPrice)} บ.</td></tr>
         ${d.pallaPrice?`<tr><td colspan="2"><b>พาราเดียม:</b> ${fmt(d.pallaPrice)} บ./บ.หนัก</td></tr>`:''}
-        <tr><td colspan="2"><b>ลูกค้า:</b> ${d.customer}</td></tr>
+        <tr><td><b>เลขที่บิล:</b> ${d.billNo}</td><td class="r"><b>ลูกค้า:</b> ${d.customer}</td></tr>
       </table>
     </div>
     <div class="st">รายการทอง</div>
@@ -552,7 +553,9 @@ function clearAll(){
   const ds=`${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
   document.getElementById('billno').textContent=`BIL-${ds}-001`;
   document.getElementById('todayTxt').textContent=thaiNow();
+  const _d=new Date();
   document.getElementById('orderDate').value=thaiNow();
+  document.getElementById('orderDateISO').value=_d.toISOString().split('T')[0];
   addG();addL();recalcTotals();
 })();
 </script>
