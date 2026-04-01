@@ -140,8 +140,8 @@ tbody td input:focus{outline:none;border-color:#BA7517}
       <input type="number" id="pallaPrice" placeholder="เช่น 34,100" oninput="onGC()">
     </div>
     <div class="fi">
-      <label>ราคาเงิน (บาท/บาทหนัก)</label>
-      <input type="number" id="silverPrice" placeholder="เช่น 1,500" oninput="onGC()">
+      <label>ราคาเงิน (บาท/กรัม)</label>
+      <input type="number" id="silverPrice" placeholder="เช่น 35" step="0.01" oninput="onGC()">
     </div>
   </div>
   <div class="pills" id="pills"></div>
@@ -304,9 +304,12 @@ function calcPPG(type){
     if(!pp_val && !gp_val) return 0;
     return (10.5 * RATE * pp_val) + (80 * RATE * gp_val) + 6;
   }
+  if(info.isSilver) {
+    if(!sp()) return 0;
+    return (info.pct / 100) * sp() + info.add;
+  }
   let price=gp();
   if(info.isPalla) price=pp();
-  if(info.isSilver) price=sp();
   if(!price)return 0;
   const base=info.pct*RATE*price+info.add;
   return base+(info.pinkAdd||0);
@@ -547,7 +550,7 @@ async function saveAndPrint(){
       <table>
         <tr><td><b>วันที่:</b> ${thaiDate(d.date)}</td><td class="r"><b>ทอง:</b> ${fmt(d.goldPrice)} บ.</td></tr>
         ${d.pallaPrice?`<tr><td colspan="2"><b>พาราเดียม:</b> ${fmt(d.pallaPrice)} บ./บ.หนัก</td></tr>`:''}
-        ${d.silverPrice?`<tr><td colspan="2"><b>เงิน:</b> ${fmt(d.silverPrice)} บ./บ.หนัก</td></tr>`:''}
+        ${d.silverPrice?`<tr><td colspan="2"><b>เงิน:</b> ${fmt(d.silverPrice)} บ./กรัม</td></tr>`:''}
         <tr><td><b>เลขที่บิล:</b> ${d.billNo}</td><td class="r"><b>ลูกค้า:</b> ${d.customer}</td></tr>
       </table>
     </div>
