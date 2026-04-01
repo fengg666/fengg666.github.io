@@ -218,6 +218,7 @@ const RM={
   "85%":       {pct:85,   add:10, si:1.5},
   "80%/18k":   {pct:80,   add:10, si:1.5},
   "63.5%/14k": {pct:63,   add:10, si:1.5},
+  "40.7%/9k":  {pct:40.7, add:10, si:2},
   "18AL":      {pct:80,   add:10, si:1.5},
   "18P":       {pct:80,   add:15, si:1.5},
   "18V":       {pct:80,   add:15, si:1.5},
@@ -311,7 +312,7 @@ function onGC(){
   const el=document.getElementById('pills');el.innerHTML='';
   if(p||pp_val||sp_val){
     const show=[];
-    if(p)show.push(...['96.5%','90%','80%/18k','63.5%/14k']);
+    if(p)show.push(...['96.5%','90%','80%/18k','63.5%/14k','40.7%/9k']);
     if(pp_val)show.push(...['18k ขาว','18k ชมพู','9k ขาว','9k ชมพู','ปากั้ม']);
     if(sp_val)show.push('เงิน 925');
     show.forEach(t=>{
