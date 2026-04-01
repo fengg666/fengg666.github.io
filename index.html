@@ -130,7 +130,7 @@ tbody td input:focus{outline:none;border-color:#BA7517}
       <input type="hidden" id="orderDateISO">
     </div>
   </div>
-  <div class="fg f2">
+  <div class="fg f3">
     <div class="fi">
       <label>ราคาทอง (บาท/บาทหนัก)</label>
       <input type="number" id="goldPrice" placeholder="เช่น 72,100" oninput="onGC()">
@@ -138,6 +138,10 @@ tbody td input:focus{outline:none;border-color:#BA7517}
     <div class="fi">
       <label>ราคาพาราเดียม (บาท/บาทหนัก)</label>
       <input type="number" id="pallaPrice" placeholder="เช่น 34,100" oninput="onGC()">
+    </div>
+    <div class="fi">
+      <label>ราคาเงิน (บาท/บาทหนัก)</label>
+      <input type="number" id="silverPrice" placeholder="เช่น 1,500" oninput="onGC()">
     </div>
   </div>
   <div class="pills" id="pills"></div>
@@ -236,6 +240,7 @@ const RM={
   "9k ขาว":    {pct:40.7, add:10, si:2,   isPalla:true, pinkAdd:0},
   "9k ชมพู":   {pct:40.7, add:10, si:2,   isPalla:true, pinkAdd:2},
   "ปากั้ม":   {pct:10.5, add:3,  si:0,   isPalla:true, pinkAdd:0},
+  "เงิน 925":   {pct:92.5, add:0,  si:0,   isSilver:true},
 };
  
 let gRows=[],lRows=[],seq=1;
@@ -288,22 +293,27 @@ function fmt(n){return isNaN(n)?'-':Math.round(n).toLocaleString('th-TH');}
 function fmtD(n,d=2){return isNaN(n)?'-':parseFloat(n.toFixed(d)).toLocaleString('th-TH',{minimumFractionDigits:d,maximumFractionDigits:d});}
 function gp(){return parseFloat(document.getElementById('goldPrice').value)||0;}
 function pp(){return parseFloat(document.getElementById('pallaPrice').value)||0;}
+function sp(){return parseFloat(document.getElementById('silverPrice').value)||0;}
 function v(id){return(document.getElementById(id).value||'').trim();}
  
 function calcPPG(type){
   const info=RM[type];if(!info)return 0;
-  const price=info.isPalla?pp():gp();
+  let price=gp();
+  if(info.isPalla) price=pp();
+  if(info.isSilver) price=sp();
   if(!price)return 0;
   const base=info.pct*RATE*price+info.add;
   return base+(info.pinkAdd||0);
 }
  
 function onGC(){
-  const p=gp();
+  const p=gp(), pp_val=pp(), sp_val=sp();
   const el=document.getElementById('pills');el.innerHTML='';
-  if(p||pp()){
-    const show=p?['96.5%','90%','80%/18k','63.5%/14k']:[];
-    if(pp())show.push(...['18k ขาว','18k ชมพู','9k ขาว','9k ชมพู','ปากั้ม']);
+  if(p||pp_val||sp_val){
+    const show=[];
+    if(p)show.push(...['96.5%','90%','80%/18k','63.5%/14k']);
+    if(pp_val)show.push(...['18k ขาว','18k ชมพู','9k ขาว','9k ชมพู','ปากั้ม']);
+    if(sp_val)show.push('เงิน 925');
     show.forEach(t=>{
       const v2=calcPPG(t);if(!v2)return;
       const d=document.createElement('div');d.className='pill';
@@ -341,8 +351,8 @@ function recalcG(id){
   const netWt=wt+(wt*si/100);
   const ppg=calcPPG(sel.value);
   inp[2].value=fmtD(netWt);
-  inp[3].value=(gp()||pp())?fmtD(ppg):'-';
-  inp[4].value=(gp()||pp())&&wt?fmt(netWt*ppg):'-';
+  inp[3].value=(gp()||pp()||sp())?fmtD(ppg):'-';
+  inp[4].value=(gp()||pp()||sp())&&wt?fmt(netWt*ppg):'-';
   recalcTotals();
 }
  
@@ -459,7 +469,7 @@ function buildData(){
   return{
     billNo:document.getElementById('billno').textContent,
     date:document.getElementById('orderDateISO').value||v('orderDate'),customer:v('customer')||'(ไม่ระบุ)',
-    goldPrice:gp(),pallaPrice:pp(),note:v('note'),
+    goldPrice:gp(),pallaPrice:pp(),silverPrice:sp(),note:v('note'),
     items,wages,goldTotal,laborTotal,grandTotal:goldTotal+laborTotal
   };
 }
@@ -531,6 +541,7 @@ async function saveAndPrint(){
       <table>
         <tr><td><b>วันที่:</b> ${thaiDate(d.date)}</td><td class="r"><b>ทอง:</b> ${fmt(d.goldPrice)} บ.</td></tr>
         ${d.pallaPrice?`<tr><td colspan="2"><b>พาราเดียม:</b> ${fmt(d.pallaPrice)} บ./บ.หนัก</td></tr>`:''}
+        ${d.silverPrice?`<tr><td colspan="2"><b>เงิน:</b> ${fmt(d.silverPrice)} บ./บ.หนัก</td></tr>`:''}
         <tr><td><b>เลขที่บิล:</b> ${d.billNo}</td><td class="r"><b>ลูกค้า:</b> ${d.customer}</td></tr>
       </table>
     </div>
@@ -586,6 +597,7 @@ function clearAll(){
   clearCustomerAndItems();
   document.getElementById('goldPrice').value='';
   document.getElementById('pallaPrice').value='';
+  document.getElementById('silverPrice').value='';
   document.getElementById('pills').innerHTML='';
   setSt('');
 }
