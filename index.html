@@ -223,24 +223,18 @@ const RM={
   "18P":       {pct:80,   add:15, si:1.5},
   "18V":       {pct:80,   add:15, si:1.5},
   "14AL":      {pct:63,   add:10, si:1.5},
-  "14P":       {pct:44.7, add:15, si:2},
-  "14V":       {pct:44.7, add:15, si:2},
+  "14P":       {pct:63,   add:15, si:2},
+  "14V":       {pct:63,   add:15, si:2},
   "10Y":       {pct:44.7, add:10, si:2},
-  "10AL":      {pct:44.7, add:12, si:2},
+  "10W":       {pct:44.7, add:12, si:2},
   "10P":       {pct:44.7, add:15, si:2},
   "10V":       {pct:44.7, add:15, si:2},
   "9Y":        {pct:40.7, add:10, si:2},
-  "9AL":       {pct:40.7, add:12, si:2},
+  "9W":        {pct:40.7, add:12, si:2},
   "9P":        {pct:40.7, add:15, si:2},
   "9V":        {pct:40.7, add:15, si:2},
   "ชค":        {pct:35,   add:15, si:2},
-  "18k ขาว":   {pct:80,   add:10, si:1.5, isPalla:true, pinkAdd:0},
-  "18k ชมพู":  {pct:80,   add:10, si:1.5, isPalla:true, pinkAdd:8},
-  "10k ขาว":   {pct:44.7, add:10, si:2,   isPalla:true, pinkAdd:0},
-  "10k ชมพู":  {pct:44.7, add:10, si:2,   isPalla:true, pinkAdd:2},
-  "9k ขาว":    {pct:40.7, add:10, si:2,   isPalla:true, pinkAdd:0},
-  "9k ชมพู":   {pct:40.7, add:10, si:2,   isPalla:true, pinkAdd:2},
-  "ปากั้ม":   {pct:10.5, add:3,  si:0,   isPalla:true, pinkAdd:0},
+  "ปากิม":      {isPakim:true, si:0},
   "เงิน 925":   {pct:92.5, add:0,  si:0,   isSilver:true},
 };
  
@@ -299,6 +293,11 @@ function v(id){return(document.getElementById(id).value||'').trim();}
  
 function calcPPG(type){
   const info=RM[type];if(!info)return 0;
+  if(info.isPakim) {
+    const pp_val = pp(), gp_val = gp();
+    if(!pp_val && !gp_val) return 0;
+    return (10.5 * RATE * pp_val) + (80 * RATE * gp_val) + 3;
+  }
   let price=gp();
   if(info.isPalla) price=pp();
   if(info.isSilver) price=sp();
@@ -313,7 +312,7 @@ function onGC(){
   if(p||pp_val||sp_val){
     const show=[];
     if(p)show.push(...['96.5%','90%','80%/18k','63.5%/14k','40.7%/9k']);
-    if(pp_val)show.push(...['18k ขาว','18k ชมพู','9k ขาว','9k ชมพู','ปากั้ม']);
+    if(pp_val)show.push('ปากิม');
     if(sp_val)show.push('เงิน 925');
     show.forEach(t=>{
       const v2=calcPPG(t);if(!v2)return;
