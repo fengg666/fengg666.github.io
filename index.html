@@ -306,7 +306,7 @@ function calcPPG(type){
   }
   if(info.isSilver) {
     if(!sp()) return 0;
-    return (info.pct / 100) * sp() + info.add;
+    return sp() + info.add;
   }
   let price=gp();
   if(info.isPalla) price=pp();
