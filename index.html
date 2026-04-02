@@ -207,8 +207,8 @@ tbody td input:focus{outline:none;border-color:#BA7517}
 <script>
 const RATE=0.000656, BW=15.244;
 const SHOP_NAME='โรงหล่อสุนทร เจริญนคร';
-const SHOP_TEL='08x-xxx-xxxx';
-const SHOP_LINE='@sunthorncast';
+const SHOP_TEL='02-862-7878';
+const SHOP_LINE='@sunthorncasting';
  
 // ── rateMap ──
 const RM={
@@ -492,7 +492,6 @@ async function saveAndPrint(){
   const d=buildData();
  
   if(d.customer&&d.customer!=='(ไม่ระบุ)')saveCustomer(d.customer);
-  setSt('กำลังบันทึก Google Sheets...');
   
   // แปลงข้อมูลให้ตรงกับที่ Google Sheet คาดหวัง
   const payloadItems = d.items.map(i => ({
@@ -510,26 +509,30 @@ async function saveAndPrint(){
     grandTotal: Number(d.grandTotal)
   };
 
-  try {
-    // 🟢 กลับมาใช้ application/json แบบปกติ หลังจากแก้ Backend แล้ว
-    const res = await fetch('https://st-bill-backend-374163482583.asia-southeast1.run.app/', {
-      redirect: 'follow',
-      method: 'POST',
-      body: JSON.stringify(payload),
-      headers: { 'Content-Type': 'application/json' } 
-    });
-    
-    if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(`Status ${res.status}: ${errText}`);
+  // ยิง API ไปหลังบ้านแบบ Asynchronous (ไม่หน่วงหน้าบิล)
+  (async () => {
+    setSt('กำลังบันทึก Google Sheets...');
+    try {
+      // 🟢 กลับมาใช้ application/json แบบปกติ หลังจากแก้ Backend แล้ว
+      const res = await fetch('https://st-bill-backend-374163482583.asia-southeast1.run.app/', {
+        redirect: 'follow',
+        method: 'POST',
+        body: JSON.stringify(payload),
+        headers: { 'Content-Type': 'application/json' } 
+      });
+      
+      if (!res.ok) {
+          const errText = await res.text();
+          throw new Error(`Status ${res.status}: ${errText}`);
+      }
+      
+      setSt('บันทึก Google Sheets เรียบร้อย', 'ok');
+    } catch(e) {
+      console.error("Fetch Error:", e);
+      setSt('บันทึกไม่สำเร็จ — พิมพ์บิลต่อได้', 'er');
+      alert("แจ้งเตือน: บันทึกข้อมูลเข้า Sheet ไม่สำเร็จ\n\nสาเหตุ: " + e.message);
     }
-    
-    setSt('บันทึก Google Sheets เรียบร้อย', 'ok');
-  } catch(e) {
-    console.error("Fetch Error:", e);
-    setSt('บันทึกไม่สำเร็จ — พิมพ์บิลต่อได้', 'er');
-    alert("แจ้งเตือน: บันทึกข้อมูลเข้า Sheet ไม่สำเร็จ\n\nสาเหตุ: " + e.message + "\n\n(ลองตรวจสอบว่า Deploy Backend ตัวใหม่เสร็จสมบูรณ์หรือยังครับ)");
-  }
+  })();
  
   // Build bill HTML (สว่างตอนปริ้นเหมือนเดิม)
   const pallaTxt=d.pallaPrice?` | พาราเดียม: ${fmt(d.pallaPrice)} บ./บ.หนัก`:'';
@@ -551,7 +554,8 @@ async function saveAndPrint(){
         <tr><td><b>วันที่:</b> ${thaiDate(d.date)}</td><td class="r"><b>ทอง:</b> ${fmt(d.goldPrice)} บ.</td></tr>
         ${d.pallaPrice?`<tr><td colspan="2"><b>พาราเดียม:</b> ${fmt(d.pallaPrice)} บ./บ.หนัก</td></tr>`:''}
         ${d.silverPrice?`<tr><td colspan="2"><b>เงิน:</b> ${fmt(d.silverPrice)} บ./กรัม</td></tr>`:''}
-        <tr><td><b>เลขที่บิล:</b> ${d.billNo}</td><td class="r"><b>ลูกค้า:</b> ${d.customer}</td></tr>
+        <tr><td colspan="2"><b>เลขที่บิล:</b> ${d.billNo}</td></tr>
+        <tr><td colspan="2" style="padding-top:6px; padding-bottom:3px; font-size:12px;"><b>ลูกค้า:</b> <span style="font-size:16px; font-weight:bold;">${d.customer}</span></td></tr>
       </table>
     </div>
     <div class="st">รายการทอง</div>
